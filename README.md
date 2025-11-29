@@ -1,1 +1,1 @@
-LMS EDU_FORGE website
+LMS EDU_FORGE Website
