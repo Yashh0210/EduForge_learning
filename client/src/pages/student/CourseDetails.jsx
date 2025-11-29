@@ -18,6 +18,7 @@ const CourseDetails = () => {
   const [courseData, setCourseData] = useState(null)
   const [playerData, setPlayerData] = useState(null)
   const [isAlreadyEnrolled, setIsAlreadyEnrolled] = useState(false)
+  const [isCourseOwner, setIsCourseOwner] = useState(false)
 
   const { backendUrl, currency, userData, calculateChapterTime, calculateCourseDuration, calculateRating, calculateNoOfLectures } = useContext(AppContext)
   const { getToken } = useAuth()
@@ -27,10 +28,18 @@ const CourseDetails = () => {
 
     try {
 
-      const { data } = await axios.get(backendUrl + '/api/course/' + id)
+      // Include auth token if user is logged in (to check if they're the course owner)
+      const token = userData ? await getToken() : null
+      const headers = token ? { Authorization: `Bearer ${token}` } : {}
+
+      const { data } = await axios.get(backendUrl + '/api/course/' + id, { headers })
 
       if (data.success) {
         setCourseData(data.courseData)
+        // Check if current user is the course owner
+        if (userData && data.courseData.educator) {
+          setIsCourseOwner(userData._id === data.courseData.educator._id || userData._id === data.courseData.educator)
+        }
       } else {
         toast.error(data.message)
       }
@@ -92,6 +101,11 @@ const CourseDetails = () => {
 
     if (userData && courseData) {
       setIsAlreadyEnrolled(userData.enrolledCourses.includes(courseData._id))
+      // Check if current user is the course owner
+      if (courseData.educator) {
+        const educatorId = courseData.educator._id || courseData.educator
+        setIsCourseOwner(userData._id === educatorId)
+      }
     }
 
   }, [userData, courseData])
@@ -146,7 +160,8 @@ const CourseDetails = () => {
                           <div className="flex items-center justify-between w-full text-gray-800 text-xs md:text-default">
                             <p>{lecture.lectureTitle}</p>
                             <div className='flex gap-2'>
-                              {lecture.isPreviewFree && lecture.lectureUrl && extractYouTubeVideoId(lecture.lectureUrl) && (
+                              {/* Show Preview button for free previews OR if user is the course owner */}
+                              {((lecture.isPreviewFree || isCourseOwner) && lecture.lectureUrl && extractYouTubeVideoId(lecture.lectureUrl)) && (
                                 <p onClick={() => {
                                   const videoId = extractYouTubeVideoId(lecture.lectureUrl);
                                   if (videoId) {
@@ -154,7 +169,9 @@ const CourseDetails = () => {
                                   } else {
                                     toast.error('Invalid YouTube URL');
                                   }
-                                }} className='text-blue-500 cursor-pointer hover:underline'>Preview</p>
+                                }} className='text-blue-500 cursor-pointer hover:underline'>
+                                  {isCourseOwner ? 'Watch' : 'Preview'}
+                                </p>
                               )}
                               <p>{humanizeDuration(lecture.lectureDuration * 60 * 1000, { units: ['h', 'm'] })}</p>
                             </div>

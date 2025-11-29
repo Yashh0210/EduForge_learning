@@ -21,20 +21,26 @@ export const getAllCourse = async (req, res) => {
 export const getCourseId = async (req, res) => {
 
     const { id } = req.params
+    const userId = req.auth?.userId // Get userId if authenticated (optional)
 
     try {
 
         const courseData = await Course.findById(id)
             .populate({ path: 'educator'})
 
-        // Remove lectureUrl if isPreviewFree is false
-        courseData.courseContent.forEach(chapter => {
-            chapter.chapterContent.forEach(lecture => {
-                if (!lecture.isPreviewFree) {
-                    lecture.lectureUrl = "";
-                }
+        // Check if the requesting user is the course educator
+        const isCourseOwner = userId && courseData.educator._id.toString() === userId.toString()
+
+        // Remove lectureUrl if isPreviewFree is false, UNLESS user is the course owner
+        if (!isCourseOwner) {
+            courseData.courseContent.forEach(chapter => {
+                chapter.chapterContent.forEach(lecture => {
+                    if (!lecture.isPreviewFree) {
+                        lecture.lectureUrl = "";
+                    }
+                });
             });
-        });
+        }
 
         res.json({ success: true, courseData })
 
