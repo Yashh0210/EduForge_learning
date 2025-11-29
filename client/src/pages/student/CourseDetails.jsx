@@ -9,6 +9,7 @@ import humanizeDuration from 'humanize-duration'
 import YouTube from 'react-youtube';
 import { useAuth } from '@clerk/clerk-react';
 import Loading from '../../components/student/Loading';
+import { extractYouTubeVideoId } from '../../utils/youtubeUtils';
 
 const CourseDetails = () => {
 
@@ -145,9 +146,16 @@ const CourseDetails = () => {
                           <div className="flex items-center justify-between w-full text-gray-800 text-xs md:text-default">
                             <p>{lecture.lectureTitle}</p>
                             <div className='flex gap-2'>
-                              {lecture.isPreviewFree && <p onClick={() => setPlayerData({
-                                videoId: lecture.lectureUrl.split('/').pop()
-                              })} className='text-blue-500 cursor-pointer'>Preview</p>}
+                              {lecture.isPreviewFree && lecture.lectureUrl && extractYouTubeVideoId(lecture.lectureUrl) && (
+                                <p onClick={() => {
+                                  const videoId = extractYouTubeVideoId(lecture.lectureUrl);
+                                  if (videoId) {
+                                    setPlayerData({ videoId });
+                                  } else {
+                                    toast.error('Invalid YouTube URL');
+                                  }
+                                }} className='text-blue-500 cursor-pointer hover:underline'>Preview</p>
+                              )}
                               <p>{humanizeDuration(lecture.lectureDuration * 60 * 1000, { units: ['h', 'm'] })}</p>
                             </div>
                           </div>
@@ -169,9 +177,23 @@ const CourseDetails = () => {
 
         <div className="max-w-course-card z-10 shadow-custom-card rounded-t md:rounded-none overflow-hidden bg-white min-w-[300px] sm:min-w-[420px]">
           {
-            playerData
-              ? <YouTube videoId={playerData.videoId} opts={{ playerVars: { autoplay: 1 } }} iframeClassName='w-full aspect-video' />
-              : <img src={courseData.courseThumbnail} alt="" />
+            playerData && playerData.videoId
+              ? (
+                <div className="w-full aspect-video">
+                  <YouTube 
+                    videoId={playerData.videoId} 
+                    opts={{ 
+                      playerVars: { 
+                        autoplay: 1,
+                        rel: 0,
+                        modestbranding: 1
+                      } 
+                    }} 
+                    iframeClassName='w-full h-full' 
+                  />
+                </div>
+              )
+              : <img src={courseData.courseThumbnail} alt="" className="w-full" />
           }
           <div className="p-5">
             <div className="flex items-center gap-2">

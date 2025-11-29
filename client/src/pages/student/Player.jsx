@@ -9,6 +9,7 @@ import { toast } from 'react-toastify';
 import Rating from '../../components/student/Rating';
 import Footer from '../../components/student/Footer';
 import Loading from '../../components/student/Loading';
+import { extractYouTubeVideoId } from '../../utils/youtubeUtils';
 
 const Player = ({ }) => {
 
@@ -173,17 +174,38 @@ const Player = ({ }) => {
 
       <div className='md:mt-10'>
         {
-          playerData
-            ? (
-              <div>
-                <YouTube iframeClassName='w-full aspect-video' videoId={playerData.lectureUrl.split('/').pop()} />
-                <div className='flex justify-between items-center mt-1'>
-                  <p className='text-xl '>{playerData.chapter}.{playerData.lecture} {playerData.lectureTitle}</p>
-                  <button onClick={() => markLectureAsCompleted(playerData.lectureId)} className='text-blue-600'>{progressData && progressData.lectureCompleted.includes(playerData.lectureId) ? 'Completed' : 'Mark Complete'}</button>
-                </div>
-              </div>
-            )
-            : <img src={courseData ? courseData.courseThumbnail : ''} alt="" />
+          playerData && playerData.lectureUrl
+            ? (() => {
+                const videoId = extractYouTubeVideoId(playerData.lectureUrl);
+                if (!videoId) {
+                  return (
+                    <div className="p-4 bg-red-50 border border-red-200 rounded">
+                      <p className="text-red-600">Invalid YouTube URL. Please check the video link.</p>
+                    </div>
+                  );
+                }
+                return (
+                  <div>
+                    <div className="w-full aspect-video">
+                      <YouTube 
+                        iframeClassName='w-full h-full' 
+                        videoId={videoId}
+                        opts={{
+                          playerVars: {
+                            rel: 0,
+                            modestbranding: 1
+                          }
+                        }}
+                      />
+                    </div>
+                    <div className='flex justify-between items-center mt-1'>
+                      <p className='text-xl '>{playerData.chapter}.{playerData.lecture} {playerData.lectureTitle}</p>
+                      <button onClick={() => markLectureAsCompleted(playerData.lectureId)} className='text-blue-600 hover:underline'>{progressData && progressData.lectureCompleted.includes(playerData.lectureId) ? 'Completed' : 'Mark Complete'}</button>
+                    </div>
+                  </div>
+                );
+              })()
+            : <img src={courseData ? courseData.courseThumbnail : ''} alt="" className="w-full" />
         }
       </div>
     </div>
