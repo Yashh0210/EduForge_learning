@@ -159,3 +159,59 @@ export const getEnrolledStudentsData = async (req, res) => {
         });
     }
 };
+
+// Delete Course
+export const deleteCourse = async (req, res) => {
+    try {
+        const educator = req.auth.userId;
+        const { courseId } = req.params;
+
+        // Find the course and verify ownership
+        const course = await Course.findById(courseId);
+
+        if (!course) {
+            return res.json({ success: false, message: 'Course not found' });
+        }
+
+        if (course.educator.toString() !== educator) {
+            return res.json({ success: false, message: 'You are not authorized to delete this course' });
+        }
+
+        // Delete thumbnail from Cloudinary if it exists
+        if (course.courseThumbnail) {
+            try {
+                // Extract public_id from Cloudinary URL
+                const urlParts = course.courseThumbnail.split('/');
+                const publicIdWithExtension = urlParts[urlParts.length - 1];
+                const publicId = publicIdWithExtension.split('.')[0];
+                const folderPath = urlParts[urlParts.length - 2];
+                const fullPublicId = folderPath ? `${folderPath}/${publicId}` : publicId;
+                
+                await cloudinary.uploader.destroy(fullPublicId);
+            } catch (cloudinaryError) {
+                console.error('Error deleting thumbnail from Cloudinary:', cloudinaryError);
+                // Continue with course deletion even if thumbnail deletion fails
+            }
+        }
+
+        // Remove course from enrolled students' enrolledCourses arrays
+        const enrolledStudentIds = course.enrolledStudents.map(id => id.toString());
+        if (enrolledStudentIds.length > 0) {
+            await User.updateMany(
+                { _id: { $in: enrolledStudentIds } },
+                { $pull: { enrolledCourses: courseId } }
+            );
+        }
+
+        // Delete related purchases
+        await Purchase.deleteMany({ courseId: courseId });
+
+        // Delete the course
+        await Course.findByIdAndDelete(courseId);
+
+        res.json({ success: true, message: 'Course deleted successfully' });
+
+    } catch (error) {
+        res.json({ success: false, message: error.message });
+    }
+};

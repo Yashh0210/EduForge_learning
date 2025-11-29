@@ -3,12 +3,14 @@ import { AppContext } from '../../context/AppContext';
 import axios from 'axios';
 import { toast } from 'react-toastify';
 import Loading from '../../components/student/Loading';
+import cross_icon from '../../assets/cross_icon.svg';
 
 const MyCourses = () => {
 
   const { backendUrl, isEducator, currency, getToken } = useContext(AppContext)
 
   const [courses, setCourses] = useState(null)
+  const [deleteConfirm, setDeleteConfirm] = useState({ show: false, courseId: null, courseTitle: '' })
 
   const fetchEducatorCourses = async () => {
 
@@ -24,6 +26,28 @@ const MyCourses = () => {
       toast.error(error.message)
     }
 
+  }
+
+  const handleDeleteCourse = async () => {
+    try {
+      const token = await getToken()
+
+      const { data } = await axios.delete(
+        `${backendUrl}/api/educator/course/${deleteConfirm.courseId}`,
+        { headers: { Authorization: `Bearer ${token}` } }
+      )
+
+      if (data.success) {
+        toast.success(data.message)
+        setDeleteConfirm({ show: false, courseId: null, courseTitle: '' })
+        // Refresh the courses list
+        fetchEducatorCourses()
+      } else {
+        toast.error(data.message)
+      }
+    } catch (error) {
+      toast.error(error.response?.data?.message || error.message || 'Failed to delete course')
+    }
   }
 
   useEffect(() => {
@@ -44,6 +68,7 @@ const MyCourses = () => {
                 <th className="px-4 py-3 font-semibold truncate">Earnings</th>
                 <th className="px-4 py-3 font-semibold truncate">Students</th>
                 <th className="px-4 py-3 font-semibold truncate">Published On</th>
+                <th className="px-4 py-3 font-semibold truncate">Actions</th>
               </tr>
             </thead>
             <tbody className="text-sm text-gray-500">
@@ -58,12 +83,48 @@ const MyCourses = () => {
                   <td className="px-4 py-3">
                     {new Date(course.createdAt).toLocaleDateString()}
                   </td>
+                  <td className="px-4 py-3">
+                    <button
+                      onClick={() => setDeleteConfirm({ show: true, courseId: course._id, courseTitle: course.courseTitle })}
+                      className="p-2 hover:bg-red-50 rounded-md transition-colors"
+                      title="Delete Course"
+                    >
+                      <img src={cross_icon} alt="Delete" className="w-5 h-5" />
+                    </button>
+                  </td>
                 </tr>
               ))}
             </tbody>
           </table>
         </div>
       </div>
+
+      {/* Delete Confirmation Dialog */}
+      {deleteConfirm.show && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4">
+            <h3 className="text-lg font-semibold mb-4">Delete Course</h3>
+            <p className="text-gray-600 mb-6">
+              Are you sure you want to delete <strong>"{deleteConfirm.courseTitle}"</strong>? 
+              This action cannot be undone and will remove the course permanently.
+            </p>
+            <div className="flex justify-end space-x-3">
+              <button
+                onClick={() => setDeleteConfirm({ show: false, courseId: null, courseTitle: '' })}
+                className="px-4 py-2 border border-gray-300 rounded-md hover:bg-gray-50 transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleDeleteCourse}
+                className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors"
+              >
+                Delete
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   ) : <Loading />
 };
