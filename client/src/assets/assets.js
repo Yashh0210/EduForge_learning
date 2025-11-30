@@ -97,21 +97,21 @@ export const dummyTestimonial = [
         role: 'SWE 1 @ Amazon',
         image: assets.profile_img_1,
         rating: 5,
-        feedback: 'I\'ve been using Imagify for nearly two years, primarily for Instagram, and it has been incredibly user-friendly, making my work much easier.',
+        feedback: 'This LMS is incredibly smooth and easy to use. The lessons are well-organized, and the progress tracking makes learning feel motivating and structured.',
     },
     {
         name: 'Aman Kushwaha',
         role: 'SWE 2 @ Samsung',
         image: assets.profile_img_2,
         rating: 4,
-        feedback: 'I\'ve been using Imagify for nearly two years, primarily for Instagram, and it has been incredibly user-friendly, making my work much easier.',
+        feedback: 'I love the clean interface and how everything is laid out. Videos, chapters, and quizzes all load fast, and it genuinely feels like a premium learning experience.',
     },
     {
         name: 'Mohit Kumar',
         role: 'SWE 2 @ Google',
         image: assets.profile_img_3,
         rating: 4.5,
-        feedback: 'I\'ve been using Imagify for nearly two years, primarily for Instagram, and it has been incredibly user-friendly, making my work much easier.',
+        feedback: 'The learning flow is amazing. Each chapter builds perfectly on the previous one, and the content quality makes it super easy to understand even complex topics.',
     },
 ];
 
