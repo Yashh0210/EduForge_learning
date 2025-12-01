@@ -8,7 +8,7 @@ const Footer = () => {
         <h1 className='hidden md:block text-xl lg:text-2xl font-bold text-gray-800'>EduForge</h1>
         <div className='hidden md:block h-7 w-px bg-gray-500/60'></div>
         <p className="py-4 text-center text-xs md:text-sm text-gray-500">
-          Copyright 2025 © GreatStack. All Right Reserved.
+          Copyright 2025 © EduForge. All Right Reserved.
         </p>
       </div>
       <div className='flex items-center gap-3 max-md:mt-4'>
