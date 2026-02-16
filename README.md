@@ -59,7 +59,7 @@ npm install
 npm run dev
 ```
 
-## Environment variables (server/.env)
+## Environment variable (server/.env)
 
 - MONGODB_URI
 - CLOUDINARY_NAME
