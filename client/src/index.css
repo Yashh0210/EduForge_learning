@@ -1,0 +1,64 @@
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap');
+
+@layer base {
+  :root {
+    --forge-ink: #0F1117;
+    --forge-slate: #1E293B;
+    --forge-mist: #F0F4FF;
+    --forge-surface: #FFFFFF;
+    --forge-border: #E2E8F0;
+    --forge-signal: #4F46E5;
+    --forge-signal-light: #EEF2FF;
+    --forge-success: #10B981;
+    --forge-warning: #F59E0B;
+    --forge-danger: #EF4444;
+    --forge-muted: #94A3B8;
+    --font-display: 'Outfit', sans-serif;
+    --font-body: 'Plus Jakarta Sans', sans-serif;
+  }
+  body {
+    font-family: var(--font-body);
+    background-color: #F8FAFC;
+    color: var(--forge-ink);
+    -webkit-font-smoothing: antialiased;
+  }
+  h1, h2, h3 {
+    font-family: var(--font-display);
+  }
+  html {
+    scroll-behavior: smooth;
+  }
+}
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+::-webkit-scrollbar{
+  display: none;
+}
+
+.rich-text { font-size: 15px; color: #7A7B7D; }
+
+.rich-text p { margin-bottom: 16px; }
+
+.rich-text h1 { font-size: 36px; font-weight: 800; color: #252525; margin: 32px 0; }
+
+.rich-text h2 { font-size: 22px; font-weight: 700; color: #252525; margin: 24px 0; }
+
+.rich-text h3 { font-size: 18px; font-weight: 600; color: #333333; margin: 20px 0; }
+
+.rich-text h4 { font-size: 16px; font-weight: 500; color: #444444; margin: 16px 0; }
+
+.rich-text h5 { font-size: 14px; font-weight: 400; color: #555555; margin: 12px 0; }
+
+.rich-text h6 { font-size: 12px; font-weight: 400; color: #666666; margin: 8px 0; }
+
+.rich-text strong { font-weight: 700; }
+
+.rich-text ol { margin-left: 30px; list-style-type: decimal; }
+
+.rich-text ul { margin-left: 30px; list-style-type: disc; }
+
+.rich-text li { margin-bottom: 8px; }
