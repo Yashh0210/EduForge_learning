@@ -25,7 +25,7 @@ const SearchBar = ({ data }) => {
       />
       <button 
         type='submit' 
-        className="bg-forge-signal text-white md:px-10 px-7 py-3 whitespace-nowrap shrink-0">
+        className="bg-forge-signal text-white md:px-10 px-4 py-3 whitespace-nowrap shrink-0">
         Find courses
       </button>
     </form>
