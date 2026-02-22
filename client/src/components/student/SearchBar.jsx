@@ -10,16 +10,24 @@ const SearchBar = ({ data }) => {
 
   const onSearchHandler = (e) => {
     e.preventDefault()
-
     navigate('/course-list/' + input)
-
   }
 
   return (
-    <form onSubmit={onSearchHandler} className="max-w-xl w-full md:h-14 h-12 flex items-center bg-white border border-gray-500/20 rounded">
+    <form onSubmit={onSearchHandler} className="max-w-xl w-full flex items-center bg-white border border-gray-500/20 rounded overflow-hidden">
       <img className="md:w-auto w-10 px-3" src={assets.search_icon} alt="search_icon" />
-      <input onChange={e => setInput(e.target.value)} value={input} type="text" className="w-full h-full outline-none text-gray-500/80" placeholder="e.g. Binary Search, React hooks, System Design..." />
-      <button type='submit' className="bg-forge-signal rounded text-white md:px-10 px-7 md:py-3 py-2 mx-1">Find courses</button>
+      <input 
+        onChange={e => setInput(e.target.value)} 
+        value={input} 
+        type="text" 
+        className="w-full h-full outline-none text-gray-500/80 py-3" 
+        placeholder="e.g. Binary Search, React hooks, System Design..." 
+      />
+      <button 
+        type='submit' 
+        className="bg-forge-signal text-white md:px-10 px-7 py-3 whitespace-nowrap shrink-0">
+        Find courses
+      </button>
     </form>
   )
 }
